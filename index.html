@@ -3,848 +3,1577 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly Data Science Review</title>
+    <title>SQL Week 2: WHERE Clauses & Operators</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0a0a;
+            font-family: 'Amazon Ember', Arial, sans-serif;
+            background: #0f1419;
             color: #ffffff;
-            min-height: 100vh;
-            overflow-x: hidden;
+            line-height: 1.6;
         }
-        
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #fff;
-            border-radius: 50%;
-            animation: twinkle 3s infinite;
-        }
-        
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-        
+
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            max-width: none;
+            width: 100%;
+            margin: 0;
             padding: 20px;
-            position: relative;
-            z-index: 2;
+            display: flex;
+            gap: 20px;
         }
-        
+
+        .sidebar {
+            width: 180px;
+            position: fixed;
+            left: 5px;
+            top: 20px;
+            height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 190px;
+            margin-right: 10px;
+            max-width: none;
+        }
+
         .header {
             text-align: center;
-            padding: 60px 0;
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-            border-radius: 20px;
-            margin-bottom: 40px;
-            position: relative;
-            overflow: hidden;
+            color: white;
+            margin-bottom: 30px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #232f3e 0%, #131a22 100%);
+            border-radius: 8px;
+            border: 1px solid #3a4553;
         }
-        
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
         }
-        
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        .org-title {
+            font-size: 2.8em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ff9900;
+            letter-spacing: 1px;
         }
-        
-        .header h1 {
-            font-size: 3.5em;
-            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+
+        .course-title {
+            font-size: 1.8em;
+            margin: 15px 0;
+            color: #ffffff;
+            font-weight: 400;
+        }
+
+        .tagline {
+            font-size: 1.1em;
+            margin-top: 15px;
+            color: #cccccc;
+            font-weight: 300;
+        }
+
+        .creator-info {
+            background: #232f3e;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #3a4553;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 25px;
+        }
+
+        .creator-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-            animation: glow 2s ease-in-out infinite alternate;
         }
-        
-        @keyframes glow {
-            from { text-shadow: 0 0 20px #00ffff; }
-            to { text-shadow: 0 0 30px #ff00ff, 0 0 40px #ffff00; }
+
+        .creator-item {
+            background: #131a22;
+            padding: 20px;
+            border-radius: 4px;
+            border: 1px solid #3a4553;
+            text-align: center;
         }
-        
-        .date-time {
+
+        .creator-item strong {
+            color: #ff9900;
+            font-size: 1em;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .creator-item .name {
+            color: #ffffff;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        .creator-item .handle {
+            color: #888888;
+            font-size: 0.9em;
+            margin-top: 4px;
+        }
+
+        .learning-path {
+            background: #ff9900;
+            color: #131a22;
+            padding: 15px 30px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .section {
+            background: #232f3e;
+            border: 1px solid #3a4553;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .section h2 {
+            color: #ff9900;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ff9900;
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .section h3 {
+            color: #ffffff;
             font-size: 1.4em;
-            color: #00ffff;
-            position: relative;
-            z-index: 1;
+            margin-bottom: 15px;
         }
-        
-        .stats {
+
+        .section p {
+            color: #cccccc;
+        }
+
+        .code-block {
+            background: #0f1419;
+            border: 1px solid #3a4553;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .highlight {
+            background: #ff9900;
+            color: #131a22;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .operator-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin: 50px 0;
+            gap: 20px;
+            margin: 20px 0;
         }
-        
-        .stat-card {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border: 2px solid #00ffff;
-            border-radius: 20px;
-            padding: 30px;
+
+        .operator-card {
+            background: #131a22;
+            border: 1px solid #3a4553;
+            padding: 20px;
+            border-radius: 4px;
             text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .operator-card:hover {
+            background: #ff9900;
+            color: #131a22;
+            border-color: #ff9900;
+        }
+
+        .operator-card h3 {
+            font-size: 2em;
+            color: #ff9900;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .operator-card:hover h3 {
+            color: #131a22;
+        }
+
+        .operator-card p {
+            color: #cccccc;
+        }
+
+        .operator-card:hover p {
+            color: #131a22;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #131a22;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #3a4553;
+        }
+
+        .table th, .table td {
+            border: 1px solid #3a4553;
+            padding: 12px;
+            text-align: left;
+            color: #ffffff;
+        }
+
+        .table th {
+            background: #ff9900;
+            color: #131a22;
+            font-weight: 600;
+        }
+
+        .table tr:nth-child(even) {
+            background: #232f3e;
+        }
+
+        .exercise {
+            background: #131a22;
+            border-left: 4px solid #ff9900;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 4px;
+            border: 1px solid #3a4553;
+        }
+
+        .exercise h3 {
+            color: #ff9900;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .exercise p {
+            color: #cccccc;
+        }
+
+        .query-builder {
+            background: #232f3e;
+            border: 1px solid #3a4553;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .selection-group {
+            margin: 20px 0;
+            padding: 15px;
+            background: #131a22;
+            border-radius: 4px;
+            border: 1px solid #3a4553;
+        }
+
+        .selection-group h4 {
+            color: #ffffff;
+            margin-bottom: 10px;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .option-btn {
+            background: #131a22;
+            border: 1px solid #3a4553;
+            color: #ffffff;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background: #232f3e;
+            border-color: #ff9900;
+        }
+
+        .option-btn.selected {
+            background: #ff9900;
+            color: #131a22;
+            border-color: #ff9900;
+        }
+
+        .query-display {
+            background: #0f1419;
+            color: #00d4aa;
+            padding: 20px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 20px 0;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            border: 1px solid #3a4553;
+        }
+
+        .btn {
+            background: #ff9900;
+            color: #131a22;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 5px;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: #ffad33;
+        }
+
+        .btn-clear {
+            background: #d13212;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #e53e3e;
+        }
+
+        .result-area {
+            background: #131a22;
+            border: 1px solid #3a4553;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success {
+            color: #00d4aa;
+            font-weight: 600;
+        }
+
+        .error {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+
+        .info-box {
+            background: #232f3e;
+            border-left: 4px solid #ff9900;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #ffffff;
+            border: 1px solid #3a4553;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #131a22;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 1px solid #3a4553;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #ff9900;
+            width: 100%;
+            animation: fillProgress 2s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .creator-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .org-title {
+                font-size: 2.2em;
+            }
+            
+            .course-title {
+                font-size: 1.5em;
+            }
+        }
+
+        /* Shining Animations */
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 153, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 153, 0, 0.6), 0 0 30px rgba(255, 153, 0, 0.4); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes slideShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Apply shine effects */
+        .org-title {
             position: relative;
             overflow: hidden;
-            transition: all 0.5s ease;
-            cursor: pointer;
+            animation: glow 3s ease-in-out infinite;
         }
-        
-        .stat-card:hover {
-            transform: translateY(-10px) scale(1.05);
-            box-shadow: 0 20px 40px rgba(0,255,255,0.3);
-            border-color: #ff00ff;
-        }
-        
-        .stat-card::before {
+
+        .org-title::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-            transition: left 0.5s;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: slideShine 3s infinite;
         }
-        
-        .stat-card:hover::before {
-            left: 100%;
-        }
-        
-        .stat-number {
-            font-size: 3em;
-            font-weight: bold;
-            background: linear-gradient(45deg, #00ffff, #ff00ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .agenda-item {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border: 1px solid #333;
-            margin: 30px 0;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: all 0.6s ease;
-            perspective: 1000px;
-        }
-        
-        .agenda-item:hover {
-            transform: rotateY(5deg) rotateX(5deg);
-            box-shadow: 0 25px 50px rgba(0,255,255,0.2);
-            border-color: #00ffff;
-        }
-        
-        .agenda-content {
-            padding: 30px;
+
+        .learning-path {
             position: relative;
-            z-index: 1;
+            overflow: hidden;
+            animation: pulse 2s ease-in-out infinite;
         }
-        
-        .agenda-item h3 {
-            font-size: 1.5em;
+
+        .learning-path::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: slideShine 4s infinite;
+        }
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: all 0.5s;
+        }
+
+        .btn:hover::before {
+            animation: slideShine 0.6s;
+        }
+
+        .section {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 153, 0, 0.1), transparent);
+            animation: slideShine 8s infinite;
+        }
+
+        .query-display {
+            position: relative;
+            overflow: hidden;
+            animation: glow 4s ease-in-out infinite;
+        }
+
+        .query-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 170, 0.2), transparent);
+            animation: slideShine 5s infinite;
+        }
+
+        .option-btn.selected {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        .table th {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .table th::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: slideShine 6s infinite;
+        }
+
+        .creator-item {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .creator-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 153, 0, 0.1), transparent);
+            animation: slideShine 7s infinite;
+        }
+
+        .success {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .progress-fill {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: slideShine 2s infinite;
+        }
+
+        /* Celebration Animations */
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-10px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes flashCelebration {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @keyframes celebrationBounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
+        .sidebar .creator-info {
+            background: #232f3e;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #3a4553;
+        }
+
+        .sidebar .creator-item {
+            background: #131a22;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #3a4553;
+            text-align: center;
             margin-bottom: 15px;
-            display: flex;
-            align-items: center;
+        }
+
+        .sidebar .creator-item strong {
+            color: #ff9900;
+            font-size: 0.9em;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .sidebar .creator-item .name {
+            color: #ffffff;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .sidebar .creator-item .handle {
+            color: #888888;
+            font-size: 0.8em;
+            margin-top: 4px;
+        }
+
+        .sidebar .learning-path {
+            background: #ff9900;
+            color: #131a22;
+            padding: 12px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+            
+            .sidebar .creator-info {
+                display: grid;
+                grid-template-columns: 1fr 1fr auto;
+                gap: 15px;
+                align-items: center;
+                padding: 15px;
+            }
+            
+            .sidebar .creator-item {
+                margin-bottom: 0;
+            }
+            
+            .org-title {
+                font-size: 2.2em;
+            }
+            
+            .course-title {
+                font-size: 1.5em;
+            }
+        }
+
+        .section {
+            background: #232f3e;
+            border: 1px solid #3a4553;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 8px;
+        }
+
+        .section h2 {
+            color: #ff9900;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ff9900;
+            padding-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background: #2d3436;
+            border: 2px solid #00b894;
+            color: #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+
+        .highlight {
+            background: #00b894;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .operator-card {
+            background: #f8f9fa;
+            border: 2px solid #00b894;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .operator-card:hover {
+            background: #00b894;
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 184, 148, 0.3);
+        }
+
+        .operator-card h3 {
+            font-size: 2em;
+            color: #00b894;
+            margin-bottom: 10px;
+        }
+
+        .operator-card:hover h3 {
+            color: white;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #131a22;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #3a4553;
+        }
+
+        .table th, .table td {
+            border: 1px solid #3a4553;
+            padding: 12px;
+            text-align: left;
             color: #ffffff;
         }
-        
-        .time-badge {
-            background: linear-gradient(45deg, #ff00ff, #00ffff);
-            color: #000;
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-size: 0.9em;
-            margin-right: 20px;
-            font-weight: bold;
-            animation: pulse 2s infinite;
+
+        .table th {
+            background: #ff9900;
+            color: #131a22;
+            font-weight: 600;
         }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+
+        .table tr:nth-child(even) {
+            background: #232f3e;
         }
-        
-        .agenda-item p {
-            color: #cccccc;
-            line-height: 1.8;
+
+        .exercise {
+            background: #131a22;
+            border-left: 4px solid #ff9900;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 4px;
+            border: 1px solid #3a4553;
+        }
+
+        .exercise h3 {
+            color: #ff9900;
             margin-bottom: 15px;
-            font-size: 1.1em;
+            font-size: 1.3em;
+            font-weight: 600;
         }
-        
-        .owner {
-            background: linear-gradient(45deg, #00ffff, #0066ff);
-            color: #000;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            display: inline-block;
-            font-weight: bold;
-        }
-        
-        .flip-card {
-            background-color: transparent;
-            width: 100%;
-            height: 200px;
-            perspective: 1000px;
+
+        .query-builder {
+            background: #232f3e;
+            border: 1px solid #3a4553;
+            border-radius: 4px;
+            padding: 20px;
             margin: 20px 0;
         }
-        
-        .flip-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.8s;
-            transform-style: preserve-3d;
-            cursor: pointer;
+
+        .selection-group {
+            margin: 20px 0;
+            padding: 15px;
+            background: #131a22;
+            border-radius: 4px;
+            border: 1px solid #3a4553;
         }
-        
-        .flip-card:hover .flip-card-inner {
-            transform: rotateY(180deg);
-        }
-        
-        .flip-card-front, .flip-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-        
-        .flip-card-front {
-            background: linear-gradient(45deg, #1a1a2e, #16213e);
-            border: 2px solid #00ffff;
-            color: #00ffff;
-        }
-        
-        .flip-card-back {
-            background: linear-gradient(45deg, #16213e, #1a1a2e);
-            border: 2px solid #ff00ff;
-            color: #ff00ff;
-            transform: rotateY(180deg);
-        }
-        
-        .footer {
-            background: linear-gradient(135deg, #1a1a2e, #0f3460);
-            padding: 40px;
-            text-align: center;
-            border-radius: 20px;
-            margin-top: 50px;
-            border: 1px solid #333;
-        }
-        
-        .footer p {
-            margin: 10px 0;
-            font-size: 1.1em;
-        }
-        
-        .meeting-link {
-            color: #00ffff;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        
-        .meeting-link:hover {
-            color: #ff00ff;
-            text-shadow: 0 0 10px #ff00ff;
-        }
-        
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #00ffff;
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-        
-        .celebration {
-            background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            margin: 40px 0;
-            position: relative;
-            overflow: hidden;
-            animation: rainbow 3s ease-in-out infinite;
-        }
-        
-        @keyframes rainbow {
-            0%, 100% { background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3); }
-            25% { background: linear-gradient(135deg, #feca57, #48dbfb, #ff9ff3, #ff6b6b); }
-            50% { background: linear-gradient(135deg, #48dbfb, #ff9ff3, #ff6b6b, #feca57); }
-            75% { background: linear-gradient(135deg, #ff9ff3, #ff6b6b, #feca57, #48dbfb); }
-        }
-        
-        .celebration h2 {
-            font-size: 2.5em;
-            color: #000;
+
+        .selection-group h4 {
+            color: #ffffff;
             margin-bottom: 10px;
-            animation: bounce 1s ease-in-out infinite;
+            font-size: 1em;
+            font-weight: 500;
         }
-        
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
+
+        .option-btn {
+            background: #131a22;
+            border: 1px solid #3a4553;
+            color: #ffffff;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
         }
-        
-        .celebration p {
-            font-size: 1.3em;
-            color: #000;
-            font-weight: bold;
-            margin-bottom: 15px;
+
+        .option-btn:hover {
+            background: #232f3e;
+            border-color: #ff9900;
         }
-        
-        .team-name {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #000;
-            text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
-            animation: glow-celebration 2s ease-in-out infinite alternate;
+
+        .option-btn.selected {
+            background: #ff9900;
+            color: #131a22;
+            border-color: #ff9900;
         }
-        
-        @keyframes glow-celebration {
-            from { text-shadow: 2px 2px 4px rgba(255,255,255,0.5); }
-            to { text-shadow: 2px 2px 20px rgba(255,255,255,0.8); }
-        }
-        
-        .confetti {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        
-        .confetti-piece {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #fff;
-            animation: confetti-fall 3s linear infinite;
-        }
-        
-        .confetti-piece:nth-child(1) {
-            left: 10%;
-            animation-delay: 0s;
-            background: #ff6b6b;
-        }
-        
-        .confetti-piece:nth-child(2) {
-            left: 30%;
-            animation-delay: 0.5s;
-            background: #feca57;
-        }
-        
-        .confetti-piece:nth-child(3) {
-            left: 50%;
-            animation-delay: 1s;
-            background: #48dbfb;
-        }
-        
-        .confetti-piece:nth-child(4) {
-            left: 70%;
-            animation-delay: 1.5s;
-            background: #ff9ff3;
-        }
-        
-        .confetti-piece:nth-child(5) {
-            left: 90%;
-            animation-delay: 2s;
-            background: #54a0ff;
-        }
-        
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100px) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(200px) rotate(720deg);
-                opacity: 0;
-            }
-        }
-        
-        .action-items-scroller {
-            background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460, #1a1a2e);
-            background-size: 400% 400%;
-            animation: gradient-shift 3s ease infinite;
-            border: 2px solid #00ffff;
-            border-radius: 10px;
-            margin: 30px 0;
-            overflow: hidden;
-            position: relative;
-            height: 60px;
-            display: flex;
-            align-items: center;
-        }
-        
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .action-items-scroller::before {
-            content: '⚡';
-            position: absolute;
-            left: 20px;
-            font-size: 1.5em;
-            color: #00ffff;
-            animation: pulse-glow 1.5s infinite;
-            z-index: 2;
-        }
-        
-        @keyframes pulse-glow {
-            0%, 100% { 
-                color: #00ffff;
-                text-shadow: 0 0 10px #00ffff;
-            }
-            50% { 
-                color: #ff00ff;
-                text-shadow: 0 0 20px #ff00ff;
-            }
-        }
-        
-        .scroller-content {
-            display: flex;
-            animation: scroll-left 20s linear infinite;
-            white-space: nowrap;
-            padding-left: 80px;
-        }
-        
-        @keyframes scroll-left {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-        
-        .action-item {
-            color: #fff;
-            font-weight: bold;
-            margin-right: 50px;
-            font-size: 1.1em;
-        }
-        
-        .action-date {
-            background: linear-gradient(45deg, #00ffff, #ff00ff);
-            color: #000;
-            padding: 2px 8px;
-            border-radius: 12px;
-            margin-left: 10px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-        
-        .welcome-message {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border: 2px solid #feca57;
-            border-radius: 15px;
+
+        .query-display {
+            background: #2d3436;
+            color: #00b894;
             padding: 20px;
-            text-align: center;
-            margin: 30px 0;
-            animation: welcome-glow 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes welcome-glow {
-            from { box-shadow: 0 0 20px rgba(254,202,87,0.3); }
-            to { box-shadow: 0 0 30px rgba(254,202,87,0.6); }
-        }
-        
-        .welcome-content {
-            font-size: 1.3em;
-            color: #feca57;
-            font-weight: bold;
-        }
-        
-        .thank-you-section {
-            text-align: center;
-            margin: 50px 0;
-            position: relative;
-        }
-        
-        .thank-you-btn {
-            background: linear-gradient(45deg, #00ffff, #ff00ff);
-            border: none;
-            border-radius: 50px;
-            padding: 20px 40px;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #000;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .thank-you-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(0,255,255,0.5);
-        }
-        
-        .celebration-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        .celebration-overlay.active {
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin: 20px 0;
+            min-height: 60px;
             display: flex;
-            animation: fadeIn 0.5s ease;
+            align-items: center;
+            border: 2px solid #00b894;
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .thank-you-message {
-            font-size: 3em;
-            color: #fff;
-            text-align: center;
-            margin-bottom: 30px;
-            animation: bounceIn 1s ease;
-        }
-        
-        @keyframes bounceIn {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        
-        .slack-message {
-            font-size: 1.5em;
-            color: #00ffff;
-            text-align: center;
-            animation: slideUp 1s ease 0.5s both;
-        }
-        
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        .flying-emoji {
-            position: absolute;
-            font-size: 2em;
-            animation: fly 3s ease-out forwards;
-            pointer-events: none;
-        }
-        
-        @keyframes fly {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-200px) translateX(var(--random-x)) rotate(720deg);
-                opacity: 0;
-            }
-        }
-        
-        .firework {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            animation: firework 2s ease-out forwards;
-        }
-        
-        @keyframes firework {
-            0% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-300px) translateX(var(--random-x));
-                opacity: 0;
-            }
-        }
-        
-        .close-btn {
-            position: absolute;
-            top: 30px;
-            right: 30px;
-            background: none;
-            border: 2px solid #fff;
-            color: #fff;
-            font-size: 1.5em;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+
+        .btn {
+            background: #00b894;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
             cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
             transition: all 0.3s ease;
+            font-weight: bold;
         }
-        
-        .close-btn:hover {
-            background: #fff;
-            color: #000;
-            transform: rotate(90deg);
+
+        .btn:hover {
+            background: #00a085;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3);
+        }
+
+        .btn-clear {
+            background: #fd79a8;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #e84393;
+            box-shadow: 0 8px 20px rgba(253, 121, 168, 0.3);
+        }
+
+        .result-area {
+            background: #f8f9fa;
+            border: 2px solid #00b894;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success {
+            color: #00b894;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #fd79a8;
+            font-weight: bold;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            color: #856404;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #00b894;
+            width: 100%;
+            animation: fillProgress 2s ease-out;
+        }
+
+        @keyframes fillProgress {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        .operator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
         }
     </style>
 </head>
 <body>
-    <div class="stars"></div>
-    
     <div class="container">
-        <div class="header">
-            <h1>📊 Weekly Data Science Review</h1>
-            <div class="date-time">Thursday, October 16, 2025 | 10:00 AM CET</div>
-            <div class="particle" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
-            <div class="particle" style="top: 60%; left: 80%; animation-delay: 2s;"></div>
-            <div class="particle" style="top: 80%; left: 20%; animation-delay: 4s;"></div>
-        </div>
-        
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-number">40</div>
-                <div class="stat-label">Minutes</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">5</div>
-                <div class="stat-label">Agenda Items</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">3</div>
-                <div class="stat-label">Presenters</div>
-            </div>
-        </div>
-        
-        <div class="celebration">
-            <div class="celebration-content">
-                <h2>🎉 CONGRATULATIONS! 🎉</h2>
-                <p>EMEA VIZCON 2025 FINALISTS</p>
-                <div class="team-name">EU FBA ANALYTICS TEAM</div>
-                <div class="confetti">
-                    <div class="confetti-piece"></div>
-                    <div class="confetti-piece"></div>
-                    <div class="confetti-piece"></div>
-                    <div class="confetti-piece"></div>
-                    <div class="confetti-piece"></div>
+        <div class="sidebar">
+            <div class="creator-info">
+                <div class="creator-item">
+                    <strong>👨‍💻 Created by</strong>
+                    <div class="name">Gaurav</div>
+                    <div class="handle">(@Rathiga)</div>
+                </div>
+                <div class="creator-item">
+                    <strong>🎯 Pillar Head</strong>
+                    <div class="name">Ambika</div>
+                    <div class="handle">(@ligerka)</div>
+                </div>
+                <div class="learning-path">
+                    🚀 SQL Fundamentals - Week 2
                 </div>
             </div>
         </div>
-        
-        <div class="flip-card">
-            <div class="flip-card-inner">
-                <div class="flip-card-front">
-                    <div>🚀 WDSR AGENDA</div>
-                </div>
-                <div class="flip-card-back">
-                    <div>✨ LET'S BEGIN!</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="action-items-scroller">
-            <div class="scroller-content">
-                <div class="action-item">
-                    ACTION ITEM: migrate SQL Starter Queries to SQL Bank (Quip; SOP)
-                    <span class="action-date">📅 Oct 13th</span>
-                </div>
-                <div class="action-item">
-                    ACTION ITEM: evaluate and formalize assigned Analyticon sessions (Quip)
-                    <span class="action-date">📅 Oct 30th</span>
+
+        <div class="main-content">
+            <div class="header">
+                <div class="header-content">
+                    <div class="org-title">🏢 HYD SUPPORT OPS</div>
+                    <div class="course-title">📚 SQL Week 2: Filtering Data</div>
+                    <div class="tagline">Master the art of finding exactly what you need with WHERE clauses!</div>
                 </div>
             </div>
-        </div>
-        
-        <div class="welcome-message">
-            <div class="welcome-content">
-                🎊 Welcome to the team <strong>Gita Rayung Andadri</strong>! 🎊
+
+        <!-- Recap Section -->
+        <div class="section">
+            <h2>🔄 Quick Review: Week 1</h2>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            
+            <p><strong>What we learned:</strong></p>
+            
+            <div class="code-block">
+SELECT * FROM products;
+<span class="highlight">-- Gets ALL columns from the table</span>
+            </div>
+            
+            <div class="code-block">
+SELECT name, price FROM products;
+<span class="highlight">-- Gets only specific columns</span>
+            </div>
+            
+            <div class="info-box">
+                <strong>Now we'll learn:</strong> How to filter rows to find specific data using WHERE clauses!
             </div>
         </div>
-        
-        <div class="agenda-item">
-            <div class="agenda-content">
-                <h3><span class="time-badge">10 min</span>🙏 General Updates / Thank You Relay</h3>
-                <p>Team-wide updates, acknowledgments, and appreciation for recent contributions</p>
-                <span class="owner">👥 All</span>
+
+        <!-- WHERE Introduction -->
+        <div class="section">
+            <h2>🎯 What is a WHERE Clause?</h2>
+            
+            <p>Think of WHERE as a <strong>filter</strong> that helps you find specific rows in your data.</p>
+            
+            <div class="code-block">
+SELECT columns FROM table WHERE <span class="highlight">condition</span>;
+            </div>
+            
+            <h3>How it works:</h3>
+            <table class="table">
+                <tr>
+                    <th>Step</th>
+                    <th>What happens</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Look at each row</td>
+                    <td>Checking row 1, 2, 3...</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Test the condition</td>
+                    <td>Is price greater than 500?</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Keep if TRUE</td>
+                    <td>✅ Yes, include this row</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Skip if FALSE</td>
+                    <td>❌ No, skip this row</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Operators Section -->
+        <div class="section">
+            <h2>🔧 Comparison Operators</h2>
+            
+            <div class="info-box">
+                <strong>Why learn operators first?</strong><br>
+                Before we can filter data with WHERE clauses, we need to understand HOW to compare values. 
+                Operators are the tools that let us say "find items equal to this" or "greater than that". 
+                Think of them as the language we use to describe what we're looking for!
+            </div>
+            
+            <p>These symbols help you compare values:</p>
+            
+            <div class="operator-grid">
+                <div class="operator-card">
+                    <h3>=</h3>
+                    <p><strong>Equal to</strong></p>
+                    <code>price = 100</code>
+                    <p>Finds exact matches</p>
+                </div>
+
+                <div class="operator-card">
+                    <h3>></h3>
+                    <p><strong>Greater than</strong></p>
+                    <code>price > 500</code>
+                    <p>Values above 500</p>
+                </div>
+
+                <div class="operator-card">
+                    <h3><</h3>
+                    <p><strong>Less than</strong></p>
+                    <code>stock < 10</code>
+                    <p>Values below 10</p>
+                </div>
+
+                <div class="operator-card">
+                    <h3>>=</h3>
+                    <p><strong>Greater or equal</strong></p>
+                    <code>rating >= 4.5</code>
+                    <p>4.5 and above</p>
+                </div>
+
+                <div class="operator-card">
+                    <h3><=</h3>
+                    <p><strong>Less or equal</strong></p>
+                    <code>year <= 2000</code>
+                    <p>2000 and below</p>
+                </div>
+
+                <div class="operator-card">
+                    <h3>!=</h3>
+                    <p><strong>Not equal</strong></p>
+                    <code>category != 'Phone'</code>
+                    <p>Everything except phones</p>
+                </div>
+            </div>
+
+            <h3>📝 Understanding Data Types</h3>
+            <div class="info-box">
+                <strong>Important:</strong> Different types of data need different formatting in SQL!
+            </div>
+            
+            <table class="table">
+                <tr>
+                    <th>Data Type</th>
+                    <th>Description</th>
+                    <th>How to Write</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td><strong>Text/String</strong></td>
+                    <td>Words, names, categories</td>
+                    <td>Use single quotes ' '</td>
+                    <td>'Phone', 'Laptop', 'John'</td>
+                </tr>
+                <tr>
+                    <td><strong>Numbers</strong></td>
+                    <td>Prices, quantities, ratings</td>
+                    <td>No quotes needed</td>
+                    <td>999, 4.8, 50</td>
+                </tr>
+                <tr>
+                    <td><strong>Dates</strong></td>
+                    <td>Dates and times</td>
+                    <td>Use single quotes ' '</td>
+                    <td>'2024-01-15', '2024-12-25'</td>
+                </tr>
+                <tr>
+                    <td><strong>Boolean</strong></td>
+                    <td>True/False values</td>
+                    <td>TRUE or FALSE</td>
+                    <td>TRUE, FALSE</td>
+                </tr>
+            </table>
+            
+            <div class="code-block">
+-- Examples of correct data type usage:
+WHERE category = 'Phone'     <span class="highlight">-- Text needs quotes</span>
+WHERE price > 500            <span class="highlight">-- Numbers don't need quotes</span>
+WHERE in_stock = TRUE        <span class="highlight">-- Boolean values</span>
+WHERE launch_date > '2020-01-01'  <span class="highlight">-- Dates need quotes</span>
             </div>
         </div>
-        
-        <div class="agenda-item">
-            <div class="agenda-content">
-                <h3><span class="time-badge">15 min</span>📋 Previous WDSR Actions & Project Tracker | SIM</h3>
-                <p>Review action items from last week's meeting and update on project tracking system (SIM)</p>
-                <span class="owner">👥 All</span>
-            </div>
+
+        <!-- Sample Data -->
+        <div class="section">
+            <h2>📊 Our Sample Data</h2>
+            <p>We'll practice with this products table:</p>
+            
+            <table class="table">
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>price</th>
+                    <th>category</th>
+                    <th>stock</th>
+                    <th>rating</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>iPhone 15</td>
+                    <td>999</td>
+                    <td>Phone</td>
+                    <td>50</td>
+                    <td>4.8</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>MacBook Pro</td>
+                    <td>1999</td>
+                    <td>Laptop</td>
+                    <td>20</td>
+                    <td>4.9</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>AirPods</td>
+                    <td>179</td>
+                    <td>Audio</td>
+                    <td>100</td>
+                    <td>4.7</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>iPad</td>
+                    <td>599</td>
+                    <td>Tablet</td>
+                    <td>60</td>
+                    <td>4.6</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Dell Laptop</td>
+                    <td>899</td>
+                    <td>Laptop</td>
+                    <td>35</td>
+                    <td>4.2</td>
+                </tr>
+            </table>
         </div>
-        
-        <div class="agenda-item">
-            <div class="agenda-content">
-                <h3><span class="time-badge">5 min</span>📊 Doc Plots on R Studio</h3>
-                <p>Demonstration and discussion of documentation plots implementation in R Studio</p>
-                <span class="owner">👤 @alejacre</span>
+
+        <!-- Interactive Exercise -->
+        <div class="section">
+            <h2>🎮 Interactive Practice</h2>
+            
+            <div class="exercise">
+                <h3>Example 1: Find all phones (Text/String)</h3>
+                <p><strong>Goal:</strong> Find products where category equals 'Phone'</p>
+                
+                <div class="query-builder">
+                    <div class="selection-group">
+                        <h4>Choose the correct query:</h4>
+                        <button class="option-btn" onclick="checkAnswer(1, 'A')">A) SELECT * FROM products WHERE category = Phone</button>
+                        <button class="option-btn" onclick="checkAnswer(1, 'B')">B) SELECT * FROM products WHERE category = 'Phone'</button>
+                        <button class="option-btn" onclick="checkAnswer(1, 'C')">C) SELECT * FROM products WHERE 'Phone' = category</button>
+                    </div>
+                    
+                    <div class="result-area" id="result1"></div>
+                </div>
             </div>
-        </div>
-        
-        <div class="agenda-item">
-            <div class="agenda-content">
-                <h3><span class="time-badge">5 min</span>🌍 PanEU New Datasets (PSA)</h3>
-                <p>Overview of new Pan-European datasets and PSA (Public Service Announcement) data integration</p>
-                <span class="owner">👤 @yvesfre</span>
+
+            <div class="exercise">
+                <h3>Example 2: Find expensive products (Numbers)</h3>
+                <p><strong>Goal:</strong> Find products where price is greater than 800</p>
+                
+                <div class="query-builder">
+                    <div class="selection-group">
+                        <h4>Choose the correct query:</h4>
+                        <button class="option-btn" onclick="checkAnswer(2, 'A')">A) SELECT * FROM products WHERE price > '800'</button>
+                        <button class="option-btn" onclick="checkAnswer(2, 'B')">B) SELECT * FROM products WHERE price > 800</button>
+                        <button class="option-btn" onclick="checkAnswer(2, 'C')">C) SELECT * FROM products WHERE '800' < price</button>
+                    </div>
+                    
+                    <div class="result-area" id="result2"></div>
+                </div>
             </div>
-        </div>
-        
-        <div class="agenda-item">
-            <div class="agenda-content">
-                <h3><span class="time-badge">5 min</span>📈 Use Custom Charts in QS Dashboard</h3>
-                <p>Implementation and demonstration of custom chart components in QuickSight dashboard</p>
-                <span class="owner">👤 @rathiga</span>
+
+            <div class="exercise">
+                <h3>Example 3: Find low stock items (Numbers with <=)</h3>
+                <p><strong>Goal:</strong> Find products where stock is 30 or less</p>
+                
+                <div class="query-builder">
+                    <div class="selection-group">
+                        <h4>Choose the correct query:</h4>
+                        <button class="option-btn" onclick="checkAnswer(3, 'A')">A) SELECT * FROM products WHERE stock < 30</button>
+                        <button class="option-btn" onclick="checkAnswer(3, 'B')">B) SELECT * FROM products WHERE stock <= 30</button>
+                        <button class="option-btn" onclick="checkAnswer(3, 'C')">C) SELECT * FROM products WHERE stock = 30</button>
+                    </div>
+                    
+                    <div class="result-area" id="result3"></div>
+                </div>
             </div>
-        </div>
-        
-        <div class="thank-you-section">
-            <button class="thank-you-btn" onclick="showCelebration()">
-                🙏 Thank You! 🙏
-            </button>
-        </div>
-        
-        <div class="celebration-overlay" id="celebrationOverlay">
-            <button class="close-btn" onclick="closeCelebration()">×</button>
-            <div class="thank-you-message">
-                🎉 THANK YOU FOR ATTENDING THE WDSR! 🎉
+
+            <div class="exercise">
+                <h3>Example 4: Find highly rated products (Decimal numbers)</h3>
+                <p><strong>Goal:</strong> Find products where rating is 4.7 or higher</p>
+                
+                <div class="query-builder">
+                    <div class="selection-group">
+                        <h4>Choose the correct query:</h4>
+                        <button class="option-btn" onclick="checkAnswer(4, 'A')">A) SELECT * FROM products WHERE rating > 4.7</button>
+                        <button class="option-btn" onclick="checkAnswer(4, 'B')">B) SELECT * FROM products WHERE rating >= 4.7</button>
+                        <button class="option-btn" onclick="checkAnswer(4, 'C')">C) SELECT * FROM products WHERE rating = '4.7'</button>
+                    </div>
+                    
+                    <div class="result-area" id="result4"></div>
+                </div>
             </div>
-            <div class="slack-message">
-                📝 Watch for meeting minutes in Slack channel
+
+            <div class="exercise">
+                <h3>Example 5: Exclude categories (NOT EQUAL)</h3>
+                <p><strong>Goal:</strong> Find all products that are NOT laptops</p>
+                
+                <div class="query-builder">
+                    <div class="selection-group">
+                        <h4>Choose the correct query:</h4>
+                        <button class="option-btn" onclick="checkAnswer(5, 'A')">A) SELECT * FROM products WHERE category != 'Laptop'</button>
+                        <button class="option-btn" onclick="checkAnswer(5, 'B')">B) SELECT * FROM products WHERE category = !'Laptop'</button>
+                        <button class="option-btn" onclick="checkAnswer(5, 'C')">C) SELECT * FROM products WHERE NOT category = 'Laptop'</button>
+                    </div>
+                    
+                    <div class="result-area" id="result5"></div>
+                </div>
             </div>
-        </div>
-        
-        <div class="footer">
-            <p>🔗 Meeting Link: <a href="#" class="meeting-link">teams.microsoft.com/join/weekly-ds-review</a></p>
-            <p>📝 Notes: Shared in #data-science-team channel post-meeting</p>
+
+            <div class="exercise">
+                <h3>Example 6: Boolean values (TRUE/FALSE)</h3>
+                <p><strong>Goal:</strong> Find products that are in stock (assuming in_stock = TRUE)</p>
+                
+                <div class="query-builder">
+                    <div class="selection-group">
+                        <h4>Choose the correct query:</h4>
+                        <button class="option-btn" onclick="checkAnswer(6, 'A')">A) SELECT * FROM products WHERE in_stock = 'TRUE'</button>
+                        <button class="option-btn" onclick="checkAnswer(6, 'B')">B) SELECT * FROM products WHERE in_stock = TRUE</button>
+                        <button class="option-btn" onclick="checkAnswer(6, 'C')">C) SELECT * FROM products WHERE in_stock = 1</button>
+                    </div>
+                    
+                    <div class="result-area" id="result6"></div>
+                </div>
+            </div>
+
+            <div class="exercise" style="background: rgba(129, 199, 132, 0.1); border-left-color: #81c784;">
+                <h3>🏆 Bonus Challenge: Build Your Own Query</h3>
+                <p><strong>Task:</strong> Find products with name 'iPad'</p>
+                
+                <div class="query-builder">
+                    <div class="selection-group">
+                        <h4>Step 1: Choose column</h4>
+                        <button class="option-btn" onclick="buildQuery('column', 'name')">name</button>
+                        <button class="option-btn" onclick="buildQuery('column', 'category')">category</button>
+                        <button class="option-btn" onclick="buildQuery('column', 'price')">price</button>
+                    </div>
+                    
+                    <div class="selection-group">
+                        <h4>Step 2: Choose operator</h4>
+                        <button class="option-btn" onclick="buildQuery('operator', '=')">=</button>
+                        <button class="option-btn" onclick="buildQuery('operator', '>')">></button>
+                        <button class="option-btn" onclick="buildQuery('operator', '!=')"!=</button>
+                    </div>
+                    
+                    <div class="selection-group">
+                        <h4>Step 3: Choose value</h4>
+                        <button class="option-btn" onclick="buildQuery('value', 'IPAD_WITH_QUOTES')">'iPad'</button>
+                        <button class="option-btn" onclick="buildQuery('value', 'iPad')">iPad (no quotes)</button>
+                        <button class="option-btn" onclick="buildQuery('value', '599')">599</button>
+                    </div>
+                    
+                    <div class="query-display" id="bonus-query">
+                        SELECT * FROM products WHERE ___
+                    </div>
+                    
+                    <button class="btn" onclick="checkBonusQuery()">Check My Query</button>
+                    <button class="btn btn-clear" onclick="resetBonusQuery()">Reset</button>
+                    
+                    <div class="result-area" id="bonus-result"></div>
+                </div>
+            </div>
+            </div>
         </div>
     </div>
-    
+
     <script>
-        // Create animated stars
-        function createStars() {
-            const starsContainer = document.querySelector('.stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                starsContainer.appendChild(star);
+        // Simple answer checking for multiple choice questions
+        function checkAnswer(questionNum, selectedAnswer) {
+            const resultDiv = document.getElementById(`result${questionNum}`);
+            resultDiv.style.display = 'block';
+            
+            // Clear previous selections
+            const buttons = event.target.parentElement.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            // Mark selected answer
+            event.target.classList.add('selected');
+            
+            const correctAnswers = {
+                1: 'B', // category = 'Phone' (text needs quotes)
+                2: 'B', // price > 800 (numbers don't need quotes)
+                3: 'B', // stock <= 30 (less than or equal)
+                4: 'B', // rating >= 4.7 (greater than or equal)
+                5: 'A', // category != 'Laptop' (not equal)
+                6: 'B'  // in_stock = TRUE (boolean doesn't need quotes)
+            };
+            
+            const explanations = {
+                1: {
+                    correct: "✅ Perfect! Text values like 'Phone' must be in single quotes.",
+                    wrong: "❌ Text values need single quotes. Try: category = 'Phone'"
+                },
+                2: {
+                    correct: "✅ Excellent! Numbers like 800 don't need quotes.",
+                    wrong: "❌ Numbers don't need quotes. Try: price > 800"
+                },
+                3: {
+                    correct: "✅ Great! <= means 'less than or equal to' - includes 30.",
+                    wrong: "❌ We want 30 OR LESS. Use <= for 'less than or equal to'."
+                },
+                4: {
+                    correct: "✅ Perfect! >= means '4.7 or higher' - includes 4.7.",
+                    wrong: "❌ We want 4.7 OR HIGHER. Use >= for 'greater than or equal to'."
+                },
+                5: {
+                    correct: "✅ Correct! != means 'not equal to' - excludes laptops.",
+                    wrong: "❌ Use != for 'not equal to'. Try: category != 'Laptop'"
+                },
+                6: {
+                    correct: "✅ Perfect! Boolean values TRUE/FALSE don't need quotes.",
+                    wrong: "❌ Boolean values don't need quotes. Try: in_stock = TRUE"
+                }
+            };
+            
+            if (selectedAnswer === correctAnswers[questionNum]) {
+                resultDiv.innerHTML = `<p class="success">${explanations[questionNum].correct}</p>`;
+                
+                // Show sample results
+                if (questionNum === 1) {
+                    resultDiv.innerHTML += `
+                        <table class="table" style="margin-top: 15px; font-size: 14px;">
+                            <tr><th>name</th><th>category</th><th>price</th></tr>
+                            <tr><td>iPhone 15</td><td>Phone</td><td>999</td></tr>
+                        </table>
+                        <p><em>Found 1 phone product!</em></p>
+                    `;
+                } else if (questionNum === 2) {
+                    resultDiv.innerHTML += `
+                        <table class="table" style="margin-top: 15px; font-size: 14px;">
+                            <tr><th>name</th><th>price</th></tr>
+                            <tr><td>iPhone 15</td><td>999</td></tr>
+                            <tr><td>MacBook Pro</td><td>1999</td></tr>
+                            <tr><td>Dell Laptop</td><td>899</td></tr>
+                        </table>
+                        <p><em>Found 3 expensive products!</em></p>
+                    `;
+                }
+            } else {
+                resultDiv.innerHTML = `<p class="error">${explanations[questionNum].wrong}</p>`;
             }
         }
         
-        // Add hover sound effect simulation
-        document.querySelectorAll('.agenda-item, .stat-card').forEach(item => {
-            item.addEventListener('mouseenter', () => {
-                item.style.transform += ' scale(1.02)';
-            });
-            item.addEventListener('mouseleave', () => {
-                item.style.transform = item.style.transform.replace(' scale(1.02)', '');
-            });
-        });
+        // Bonus query builder
+        let bonusQuery = { column: '', operator: '', value: '' };
         
-        createStars();
-        
-        function showCelebration() {
-            const overlay = document.getElementById('celebrationOverlay');
-            overlay.classList.add('active');
+        function buildQuery(type, value) {
+            // Clear previous selections in this group
+            const buttons = event.target.parentElement.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
             
-            // Create flying emojis
-            const emojis = ['🎉', '🎊', '✨', '🌟', '💫', '🎈', '🎁', '👏'];
+            // Mark current selection
+            event.target.classList.add('selected');
             
-            for (let i = 0; i < 30; i++) {
-                setTimeout(() => {
-                    const emoji = document.createElement('div');
-                    emoji.className = 'flying-emoji';
-                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-                    emoji.style.left = Math.random() * 100 + '%';
-                    emoji.style.top = '80%';
-                    emoji.style.setProperty('--random-x', (Math.random() - 0.5) * 400 + 'px');
-                    overlay.appendChild(emoji);
-                    
-                    setTimeout(() => {
-                        emoji.remove();
-                    }, 3000);
-                }, i * 100);
+            // Convert special case to single quotes
+            if (value === 'IPAD_WITH_QUOTES') {
+                value = "'iPad'";
             }
             
-            // Create fireworks
-            const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff'];
+            // Store selection
+            bonusQuery[type] = value;
             
+            // Update query display
+            let query = 'SELECT * FROM products WHERE ';
+            if (bonusQuery.column && bonusQuery.operator && bonusQuery.value) {
+                query += `${bonusQuery.column} ${bonusQuery.operator} ${bonusQuery.value}`;
+            } else {
+                query += '___';
+            }
+            
+            document.getElementById('bonus-query').textContent = query;
+        }
+        
+        function checkBonusQuery() {
+            const resultDiv = document.getElementById('bonus-result');
+            resultDiv.style.display = 'block';
+            
+            if (bonusQuery.column === 'name' && bonusQuery.operator === '=' && bonusQuery.value === "'iPad'") {
+                // Create celebration effect
+                createCelebration();
+                
+                resultDiv.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="font-size: 3em; margin-bottom: 20px;">🎉🎊✨</div>
+                        <h2 style="color: #ff9900; margin-bottom: 15px;">CONGRATULATIONS!</h2>
+                        <p class="success" style="font-size: 1.2em; margin-bottom: 20px;">🏆 Perfect! You've mastered SQL Week 2!</p>
+                        
+                        <div style="background: linear-gradient(135deg, #232f3e, #131a22); padding: 25px; border-radius: 8px; margin: 20px 0; border: 2px solid #ff9900; position: relative; overflow: hidden;">
+                            <div style="font-size: 1.3em; color: #ffffff; font-style: italic; margin-bottom: 15px; line-height: 1.6;">
+                                "Learning SQL is like unlocking a superpower — you stop guessing and start knowing what the data is really saying."
+                            </div>
+                            <div style="color: #ff9900; font-weight: bold;">🦸‍♀️ You now have the power! 🦸‍♂️</div>
+                        </div>
+                        
+                        <div style="background: #232f3e; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #ff9900;">
+                            <h3 style="color: #ff9900; margin-bottom: 15px;">✅ Superpowers Unlocked:</h3>
+                            <ul style="text-align: left; color: #ffffff; line-height: 2;">
+                                <li>✅ WHERE clause filtering mastery</li>
+                                <li>✅ Six comparison operators (=, >, <, >=, <=, !=)</li>
+                                <li>✅ Data type handling (Text, Numbers, Booleans)</li>
+                                <li>✅ Query building and testing expertise</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: linear-gradient(45deg, #ff9900, #ffad33); color: #131a22; padding: 20px; border-radius: 8px; margin: 20px 0; font-weight: bold; font-size: 1.1em;">
+                            🚀 Ready to Level Up? Week 3: Multiple Conditions & Advanced Filtering Awaits!
+                        </div>
+                    </div>
+                `;
+            } else {
+                let hint = '';
+                if (!bonusQuery.column || !bonusQuery.operator || !bonusQuery.value) {
+                    hint = 'Please complete all three selections.';
+                } else if (bonusQuery.column !== 'name') {
+                    hint = 'We want to search by product name.';
+                } else if (bonusQuery.operator !== '=') {
+                    hint = 'We want an exact match, use = operator.';
+                } else if (bonusQuery.value !== "'iPad'") {
+                    hint = 'Text values need single quotes: \'iPad\'';
+                }
+                
+                resultDiv.innerHTML = `
+                    <p class="error">❌ Not quite right. ${hint}</p>
+                    <p><strong>Goal:</strong> name = 'iPad'</p>
+                `;
+            }
+        }
+        
+        function createCelebration() {
+            // Create confetti effect
             for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const firework = document.createElement('div');
-                    firework.className = 'firework';
-                    firework.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    firework.style.left = Math.random() * 100 + '%';
-                    firework.style.top = '90%';
-                    firework.style.setProperty('--random-x', (Math.random() - 0.5) * 600 + 'px');
-                    overlay.appendChild(firework);
-                    
-                    setTimeout(() => {
-                        firework.remove();
-                    }, 2000);
-                }, i * 50);
+                createConfetti();
             }
+            
+            // Add screen flash effect
+            const flash = document.createElement('div');
+            flash.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle, rgba(255,153,0,0.3) 0%, transparent 70%);
+                pointer-events: none;
+                z-index: 9999;
+                animation: flashCelebration 1s ease-out;
+            `;
+            document.body.appendChild(flash);
+            
+            setTimeout(() => {
+                document.body.removeChild(flash);
+            }, 1000);
         }
         
-        function closeCelebration() {
-            const overlay = document.getElementById('celebrationOverlay');
-            overlay.classList.remove('active');
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            const colors = ['#ff9900', '#00d4aa', '#ffffff', '#ffad33'];
+            const symbols = ['🎉', '🎊', '✨', '🏆', '🎯', '⭐'];
+            
+            confetti.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            confetti.style.cssText = `
+                position: fixed;
+                top: -10px;
+                left: ${Math.random() * 100}%;
+                font-size: ${Math.random() * 20 + 15}px;
+                color: ${colors[Math.floor(Math.random() * colors.length)]};
+                pointer-events: none;
+                z-index: 9998;
+                animation: confettiFall ${Math.random() * 3 + 2}s linear forwards;
+            `;
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                if (document.body.contains(confetti)) {
+                    document.body.removeChild(confetti);
+                }
+            }, 5000);
+        }
+        
+        function resetBonusQuery() {
+            bonusQuery = { column: '', operator: '', value: '' };
+            
+            // Clear all selections in bonus challenge
+            const bonusContainer = document.getElementById('bonus-result').parentElement;
+            bonusContainer.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Reset query display
+            document.getElementById('bonus-query').textContent = 'SELECT * FROM products WHERE ___';
+            
+            // Hide results
+            document.getElementById('bonus-result').style.display = 'none';
         }
     </script>
 </body>
